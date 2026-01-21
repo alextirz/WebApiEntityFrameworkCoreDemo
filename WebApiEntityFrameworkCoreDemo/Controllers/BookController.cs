@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApiEntityFrameworkCoreDemo.DTOs;
 using WebApiEntityFrameworkCoreDemo.Models;
 using WebApiEntityFrameworkCoreDemo.Services;
 
@@ -41,31 +42,26 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> AddBook(Book book, CancellationToken token)
+        public async Task<ActionResult<Book>> AddBook(BookRequest request, CancellationToken token)
         {
-            var dbBook = await _libraryService.AddBookAsync(book, token);
+            var dbBook = await _libraryService.AddBookAsync(request, token);
 
             if (dbBook == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be added.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{request.Title} could not be added.");
             }
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            return CreatedAtAction("GetBook", new { id = dbBook.Id }, dbBook);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(Guid id, Book book, CancellationToken token)
+        public async Task<IActionResult> UpdateBook(Guid id, BookRequest request, CancellationToken token)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
-
-            Book dbBook = await _libraryService.UpdateBookAsync(book, token);
+            Book dbBook = await _libraryService.UpdateBookAsync(id, request, token);
 
             if (dbBook == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be updated");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{request.Title} could not be updated");
             }
 
             return NoContent();

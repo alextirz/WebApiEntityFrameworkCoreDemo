@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApiEntityFrameworkCoreDemo.DTOs;
 using WebApiEntityFrameworkCoreDemo.Models;
 using WebApiEntityFrameworkCoreDemo.Services;
 
@@ -42,7 +43,7 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Author>> AddAuthor(Author author, CancellationToken token)
+        public async Task<ActionResult<Author>> AddAuthor(AuthorRequest author, CancellationToken token)
         {
             var response = await _libraryService.AddAuthorAsync(author, token);
 
@@ -51,18 +52,14 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return CreatedAtAction("GetAuthor", new { id = author.Id }, author);
+            var dbAuthor = await _libraryService.GetAuthorAsync(response.Id.Value, token, true);
+            return CreatedAtAction("GetAuthor", new { id = response.Id }, dbAuthor);
         }
 
-        [HttpPut("id")]
-        public async Task<IActionResult> UpdateAuthor(Guid id, Author author, CancellationToken token)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAuthor(Guid id, AuthorRequest author, CancellationToken token)
         {
-            if (id != author.Id)
-            {
-                return BadRequest();
-            }
-
-            Author dbAuthor = await _libraryService.UpdateAuthorAsync(author, token);
+            Author dbAuthor = await _libraryService.UpdateAuthorAsync(id, author, token);
 
             if (dbAuthor == null)
             {
