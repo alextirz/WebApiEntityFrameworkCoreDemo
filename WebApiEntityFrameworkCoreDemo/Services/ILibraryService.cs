@@ -2,7 +2,7 @@
 
 namespace WebApiEntityFrameworkCoreDemo.Services
 {
-    // TODO: refactor this
+    // TODO: refactor this tp separate services
     public interface ILibraryService
     {
         Task<List<Author>> GetAuthorsAsync(CancellationToken cancellationToken);

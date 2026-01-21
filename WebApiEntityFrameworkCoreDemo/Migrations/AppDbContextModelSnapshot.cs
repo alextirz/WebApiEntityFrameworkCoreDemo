@@ -17,7 +17,7 @@ namespace WebApiEntityFrameworkCoreDemo.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "8.0.23")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -43,13 +43,13 @@ namespace WebApiEntityFrameworkCoreDemo.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"),
+                            Id = new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"),
                             BirthDate = new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Vasya P"
                         },
                         new
                         {
-                            Id = new Guid("cb7ac236-ebc6-4e4b-88f8-863e453aad76"),
+                            Id = new Guid("693bf6f7-71f2-4706-a6cb-5511c978f511"),
                             BirthDate = new DateTime(1910, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Petya R"
                         });
@@ -86,24 +86,24 @@ namespace WebApiEntityFrameworkCoreDemo.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b9f223f4-db20-40e7-bacd-6ca24c6606cd"),
-                            AuthorId = new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"),
+                            Id = new Guid("639a71e2-d519-46c8-896d-d81ccbfefc14"),
+                            AuthorId = new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"),
                             Description = "Description1",
                             Price = 123.11m,
                             Title = "Title1"
                         },
                         new
                         {
-                            Id = new Guid("80ce8f39-4696-4e5a-aa11-7a395d9a45f7"),
-                            AuthorId = new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"),
+                            Id = new Guid("10e9643b-4691-4cb3-b00c-09895ee81acc"),
+                            AuthorId = new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"),
                             Description = "Description2",
                             Price = 113.11m,
                             Title = "Title2"
                         },
                         new
                         {
-                            Id = new Guid("870bc805-51e3-41c4-88a8-897bb3108c3b"),
-                            AuthorId = new Guid("cb7ac236-ebc6-4e4b-88f8-863e453aad76"),
+                            Id = new Guid("cce169b1-065f-40e2-8a74-403042d52ef0"),
+                            AuthorId = new Guid("693bf6f7-71f2-4706-a6cb-5511c978f511"),
                             Description = "Description3",
                             Price = 1523.11m,
                             Title = "Title3"

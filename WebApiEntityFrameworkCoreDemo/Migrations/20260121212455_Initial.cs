@@ -52,8 +52,8 @@ namespace WebApiEntityFrameworkCoreDemo.Migrations
                 columns: new[] { "Id", "BirthDate", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("cb7ac236-ebc6-4e4b-88f8-863e453aad76"), new DateTime(1910, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Petya R" },
-                    { new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"), new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Vasya P" }
+                    { new Guid("693bf6f7-71f2-4706-a6cb-5511c978f511"), new DateTime(1910, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Petya R" },
+                    { new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"), new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Vasya P" }
                 });
 
             migrationBuilder.InsertData(
@@ -61,9 +61,9 @@ namespace WebApiEntityFrameworkCoreDemo.Migrations
                 columns: new[] { "Id", "AuthorId", "Description", "Price", "Title" },
                 values: new object[,]
                 {
-                    { new Guid("80ce8f39-4696-4e5a-aa11-7a395d9a45f7"), new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"), "Description2", 113.11m, "Title2" },
-                    { new Guid("870bc805-51e3-41c4-88a8-897bb3108c3b"), new Guid("cb7ac236-ebc6-4e4b-88f8-863e453aad76"), "Description3", 1523.11m, "Title3" },
-                    { new Guid("b9f223f4-db20-40e7-bacd-6ca24c6606cd"), new Guid("f1905e08-a903-45e2-973c-1ea1aa7d1eb1"), "Description1", 123.11m, "Title1" }
+                    { new Guid("10e9643b-4691-4cb3-b00c-09895ee81acc"), new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"), "Description2", 113.11m, "Title2" },
+                    { new Guid("639a71e2-d519-46c8-896d-d81ccbfefc14"), new Guid("c374e5f1-cc7c-4248-aad8-8f87bd5aa3e6"), "Description1", 123.11m, "Title1" },
+                    { new Guid("cce169b1-065f-40e2-8a74-403042d52ef0"), new Guid("693bf6f7-71f2-4706-a6cb-5511c978f511"), "Description3", 1523.11m, "Title3" }
                 });
 
             migrationBuilder.CreateIndex(
