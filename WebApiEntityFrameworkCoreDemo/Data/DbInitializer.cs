@@ -16,6 +16,9 @@ namespace WebApiEntityFrameworkCoreDemo.Data
         {
             var firstAuthorId = Guid.NewGuid();
             var secondAuthorId = Guid.NewGuid();
+            var firstBookId = Guid.NewGuid();
+            var secondBookId = Guid.NewGuid();
+            var thirdBookId = Guid.NewGuid();
 
             _modelBuilder.Entity<Author>(x =>
             {
@@ -37,29 +40,33 @@ namespace WebApiEntityFrameworkCoreDemo.Data
             {
                 x.HasData(new Book
                 {
-                    Id = Guid.NewGuid(),
+                    Id = firstBookId,
                     Title = "Title1",
                     Description = "Description1",
-                    Price = 123.11m,
-                    AuthorId = firstAuthorId
+                    Price = 123.11m
                 });
                 x.HasData(new Book
                 {
-                    Id = Guid.NewGuid(),
+                    Id = secondBookId,
                     Title = "Title2",
                     Description = "Description2",
-                    Price = 113.11m,
-                    AuthorId = firstAuthorId
+                    Price = 113.11m
                 });
                 x.HasData(new Book
                 {
-                    Id = Guid.NewGuid(),
+                    Id = thirdBookId,
                     Title = "Title3",
                     Description = "Description3",
-                    Price = 1523.11m,
-                    AuthorId = secondAuthorId
+                    Price = 1523.11m
                 });
             });
+
+            _modelBuilder.Entity("AuthorBook").HasData(
+                new { AuthorsId = firstAuthorId, BooksId = firstBookId },
+                new { AuthorsId = firstAuthorId, BooksId = secondBookId },
+                new { AuthorsId = secondAuthorId, BooksId = thirdBookId },
+                new { AuthorsId = secondAuthorId, BooksId = firstBookId } 
+            );
         }
     }
 }

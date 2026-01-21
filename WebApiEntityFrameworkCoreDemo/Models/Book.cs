@@ -14,8 +14,6 @@ namespace WebApiEntityFrameworkCoreDemo.Models
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
-        [Required]
-        public Guid AuthorId { get; set; }
-        public virtual Author Author { get; set; }
+        public virtual IEnumerable<Author> Authors { get; set; }
     }
 }

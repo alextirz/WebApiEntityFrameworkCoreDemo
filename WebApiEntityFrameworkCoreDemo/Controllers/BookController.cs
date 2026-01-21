@@ -28,9 +28,9 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBooks(Guid id, CancellationToken token)
+        public async Task<IActionResult> GetBooks(Guid id, CancellationToken token, bool includeAuthors = true)
         {
-            Book book = await _libraryService.GetBookAsync(id, token);
+            Book book = await _libraryService.GetBookAsync(id, token, includeAuthors);
 
             if (book == null)
             {

@@ -71,9 +71,10 @@ namespace WebApiEntityFrameworkCoreDemo.Services
             return await _db.Books.ToListAsync(cancellationToken);
         }
 
-        public async Task<Book> GetBookAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Book> GetBookAsync(Guid id, CancellationToken cancellationToken = default, bool includeAuthors = false)
         {
-            return await _db.Books.FindAsync(id);
+            return includeAuthors ? await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id, cancellationToken)
+                : await _db.Books.FindAsync(id, cancellationToken);
         }
 
         public async Task<Book> AddBookAsync(Book book, CancellationToken cancellationToken = default)

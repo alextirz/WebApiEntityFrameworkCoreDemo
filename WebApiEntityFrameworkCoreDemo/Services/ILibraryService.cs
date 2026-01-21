@@ -12,7 +12,7 @@ namespace WebApiEntityFrameworkCoreDemo.Services
         Task<(bool, string)> DeleteAuthorAsync(Author author, CancellationToken cancellationToken);
 
         Task<List<Book>> GetBooksAsync(CancellationToken cancellationToken);
-        Task<Book> GetBookAsync(Guid id, CancellationToken cancellationToken);
+        Task<Book> GetBookAsync(Guid id, CancellationToken cancellationToken, bool includeAuthors = false);
         Task<Book> AddBookAsync(Book book, CancellationToken cancellationToken);
         Task<Book> UpdateBookAsync(Book book, CancellationToken cancellationToken);
         Task<(bool, string)> DeleteBookAsync(Book book, CancellationToken cancellationToken);
