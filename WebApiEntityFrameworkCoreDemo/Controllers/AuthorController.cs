@@ -44,11 +44,11 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Author>> AddAuthor(Author author, CancellationToken token)
         {
-            var dbAuthor = await _libraryService.AddAuthorAsync(author, token);
+            var response = await _libraryService.AddAuthorAsync(author, token);
 
-            if (dbAuthor == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{author.Name} could not be added.");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
             return CreatedAtAction("GetAuthor", new { id = author.Id }, author);

@@ -7,10 +7,12 @@ namespace WebApiEntityFrameworkCoreDemo.Services
     public class LibraryService : ILibraryService
     {
         private readonly AppDbContext _db;
+        private readonly ILogger<LibraryService> _logger;
 
-        public LibraryService(AppDbContext db)
+        public LibraryService(AppDbContext db, ILogger<LibraryService> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         #region Authors
@@ -25,11 +27,19 @@ namespace WebApiEntityFrameworkCoreDemo.Services
             return includeBooks ? await _db.Authors.Include(b => b.Books).FirstOrDefaultAsync(i => i.Id == id) : await _db.Authors.FindAsync(id);
         }
 
-        public async Task<Author> AddAuthorAsync(Author author, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponse> AddAuthorAsync(Author author, CancellationToken cancellationToken = default)
         {
-            await _db.Authors.AddAsync(author, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            return await _db.Authors.FindAsync(author.Id);
+            try
+            {
+                await _db.Authors.AddAsync(author, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+                return ErrorResponse.Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding author {AuthorName}", author.Name);
+                return ErrorResponse.Fail(ex.Message);
+            }
         }
 
         public async Task<Author> UpdateAuthorAsync(Author author, CancellationToken cancellationToken = default)
