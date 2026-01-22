@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApiEntityFrameworkCoreDemo.DTOs;
 using WebApiEntityFrameworkCoreDemo.Models;
 using WebApiEntityFrameworkCoreDemo.Services;
 
@@ -8,17 +9,17 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
     [Route("api/[controller]")]
     public class BookController : ControllerBase
     {
-        private readonly ILibraryService _libraryService;
+        private readonly IBookService _bookService;
 
-        public BookController(ILibraryService libraryService)
+        public BookController(IBookService bookService)
         {
-            _libraryService = libraryService;
+            _bookService = bookService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBooks(CancellationToken token)
+        public async Task<IActionResult> GetBooks(CancellationToken token, bool includeAuthors = false)
         {
-            var books = await _libraryService.GetBooksAsync(token);
+            var books = await _bookService.GetBooksAsync(token, includeAuthors);
             if (books == null)
             {
                 return StatusCode(StatusCodes.Status204NoContent, "No books in database.");
@@ -28,9 +29,9 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBooks(Guid id, CancellationToken token)
+        public async Task<IActionResult> GetBook(Guid id, CancellationToken token, bool includeAuthors = true)
         {
-            Book book = await _libraryService.GetBookAsync(id, token);
+            Book book = await _bookService.GetBookAsync(id, token, includeAuthors);
 
             if (book == null)
             {
@@ -41,31 +42,27 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> AddBook(Book book, CancellationToken token)
+        public async Task<ActionResult<Book>> AddBook(BookRequest request, CancellationToken token)
         {
-            var dbBook = await _libraryService.AddBookAsync(book, token);
+            var response = await _bookService.AddBookAsync(request, token);
 
-            if (dbBook == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be added.");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+            var dbBook = await _bookService.GetBookAsync(response.Id.Value, token, true);
+            return CreatedAtAction("GetBook", new { id = response.Id }, dbBook);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(Guid id, Book book, CancellationToken token)
+        public async Task<IActionResult> UpdateBook(Guid id, BookRequest request, CancellationToken token)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
+            var response = await _bookService.UpdateBookAsync(id, request, token);
 
-            Book dbBook = await _libraryService.UpdateBookAsync(book, token);
-
-            if (dbBook == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{book.Title} could not be updated");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
             return NoContent();
@@ -74,15 +71,14 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id, CancellationToken token)
         {
-            var book = await _libraryService.GetBookAsync(id, token);
-            (bool status, string message) = await _libraryService.DeleteBookAsync(book, token);
+            var response = await _bookService.DeleteBookAsync(id, token);
 
-            if (status == false)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, message);
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return StatusCode(StatusCodes.Status200OK, book);
+            return StatusCode(StatusCodes.Status200OK, response.Message);
         }
     }
 }

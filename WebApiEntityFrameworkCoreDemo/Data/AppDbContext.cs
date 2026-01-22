@@ -14,8 +14,8 @@ namespace WebApiEntityFrameworkCoreDemo.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Book>()
-                .HasOne(x => x.Author)
-                .WithMany(x => x.Books);
+                .HasMany(b => b.Authors)
+                .WithMany(a => a.Books);
 
             // for demo data
             new DbInitializer(modelBuilder).Seed();

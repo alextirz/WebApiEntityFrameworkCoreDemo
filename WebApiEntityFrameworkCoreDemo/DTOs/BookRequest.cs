@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace WebApiEntityFrameworkCoreDemo.Models
+namespace WebApiEntityFrameworkCoreDemo.DTOs
 {
-    public class Book
+    public class BookRequest
     {
-        [Key]
-        public Guid Id { get; set; }
         [Required]
         [StringLength(255)]
         public string Title { get; set; }
@@ -14,6 +12,6 @@ namespace WebApiEntityFrameworkCoreDemo.Models
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public virtual IEnumerable<Author> Authors { get; set; }
+        public List<Guid> AuthorIds { get; set; } = new();
     }
 }
