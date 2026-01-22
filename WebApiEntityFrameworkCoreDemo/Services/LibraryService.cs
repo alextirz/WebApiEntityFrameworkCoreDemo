@@ -28,7 +28,7 @@ namespace WebApiEntityFrameworkCoreDemo.Services
             return includeBooks ? await _db.Authors.Include(b => b.Books).FirstOrDefaultAsync(i => i.Id == id) : await _db.Authors.FindAsync(id);
         }
 
-        public async Task<ErrorResponse> AddAuthorAsync(AuthorRequest request, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> AddAuthorAsync(AuthorRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -47,21 +47,21 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
                 await _db.Authors.AddAsync(author, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
-                return ErrorResponse.Ok(author.Id);
+                return ApiResponse.Ok(author.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding author {AuthorName}", request.Name);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
-        public async Task<ErrorResponse> UpdateAuthorAsync(Guid id, AuthorRequest request, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> UpdateAuthorAsync(Guid id, AuthorRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
                 var author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
-                if (author == null) return ErrorResponse.Fail($"Author with id {id} not found");
+                if (author == null) return ApiResponse.Fail($"Author with id {id} not found");
 
                 author.Name = request.Name;
                 author.BirthDate = request.BirthDate;
@@ -73,16 +73,16 @@ namespace WebApiEntityFrameworkCoreDemo.Services
                 }
 
                 await _db.SaveChangesAsync(cancellationToken);
-                return ErrorResponse.Ok(id);
+                return ApiResponse.Ok(id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating author {AuthorId}", id);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
-        public async Task<ErrorResponse> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -90,18 +90,18 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
                 if (author == null)
                 {
-                    return ErrorResponse.Fail($"Author with id {id} not found");
+                    return ApiResponse.Fail($"Author with id {id} not found");
                 }
 
                 _db.Authors.Remove(author);
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return ErrorResponse.Ok("Author deleted successfully");
+                return ApiResponse.Ok("Author deleted successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting author {AuthorId}", id);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
@@ -120,7 +120,7 @@ namespace WebApiEntityFrameworkCoreDemo.Services
                 : await _db.Books.FindAsync(id, cancellationToken);
         }
 
-        public async Task<ErrorResponse> AddBookAsync(BookRequest request, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> AddBookAsync(BookRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -140,21 +140,21 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
                 await _db.Books.AddAsync(book, cancellationToken);
                 await _db.SaveChangesAsync(cancellationToken);
-                return ErrorResponse.Ok(book.Id);
+                return ApiResponse.Ok(book.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding book {BookTitle}", request.Title);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
-        public async Task<ErrorResponse> UpdateBookAsync(Guid id, BookRequest request, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> UpdateBookAsync(Guid id, BookRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
                 var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
-                if (book == null) return ErrorResponse.Fail($"Book with id {id} not found");
+                if (book == null) return ApiResponse.Fail($"Book with id {id} not found");
 
                 book.Title = request.Title;
                 book.Description = request.Description;
@@ -167,16 +167,16 @@ namespace WebApiEntityFrameworkCoreDemo.Services
                 }
 
                 await _db.SaveChangesAsync(cancellationToken);
-                return ErrorResponse.Ok(id);
+                return ApiResponse.Ok(id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating book {BookId}", id);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
-        public async Task<ErrorResponse> DeleteBookAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse> DeleteBookAsync(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -184,18 +184,18 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
                 if (book == null)
                 {
-                    return ErrorResponse.Fail($"Book with id {id} not found");
+                    return ApiResponse.Fail($"Book with id {id} not found");
                 }
 
                 _db.Books.Remove(book);
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return ErrorResponse.Ok("Book deleted successfully");
+                return ApiResponse.Ok("Book deleted successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting book {BookId}", id);
-                return ErrorResponse.Fail(ex.Message);
+                return ApiResponse.Fail(ex.Message);
             }
         }
 
