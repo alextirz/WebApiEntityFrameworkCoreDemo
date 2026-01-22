@@ -56,43 +56,52 @@ namespace WebApiEntityFrameworkCoreDemo.Services
             }
         }
 
-        public async Task<Author> UpdateAuthorAsync(Guid id, AuthorRequest request, CancellationToken cancellationToken = default)
-        {
-            var author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
-            if (author == null) return null;
-
-            author.Name = request.Name;
-            author.BirthDate = request.BirthDate;
-
-            if (request.BookIds != null)
-            {
-                var books = await _db.Books.Where(b => request.BookIds.Contains(b.Id)).ToListAsync(cancellationToken);
-                author.Books = books;
-            }
-
-            await _db.SaveChangesAsync(cancellationToken);
-            return author;
-        }
-
-        public async Task<(bool, string)> DeleteAuthorAsync(Author author, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponse> UpdateAuthorAsync(Guid id, AuthorRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                var dbAuthor = await _db.Authors.FindAsync(author.Id);
+                var author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+                if (author == null) return ErrorResponse.Fail($"Author with id {id} not found");
 
-                if (dbAuthor == null)
+                author.Name = request.Name;
+                author.BirthDate = request.BirthDate;
+
+                if (request.BookIds != null)
                 {
-                    return (false, "Author could not be found");
+                    var books = await _db.Books.Where(b => request.BookIds.Contains(b.Id)).ToListAsync(cancellationToken);
+                    author.Books = books;
+                }
+
+                await _db.SaveChangesAsync(cancellationToken);
+                return ErrorResponse.Ok(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating author {AuthorId}", id);
+                return ErrorResponse.Fail(ex.Message);
+            }
+        }
+
+        public async Task<ErrorResponse> DeleteAuthorAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var author = await _db.Authors.FindAsync(id);
+
+                if (author == null)
+                {
+                    return ErrorResponse.Fail($"Author with id {id} not found");
                 }
 
                 _db.Authors.Remove(author);
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return (true, "Author got deleted.");
+                return ErrorResponse.Ok("Author deleted successfully");
             }
             catch (Exception ex)
             {
-                return (false, $"An error occured. Error Message: {ex.Message}");
+                _logger.LogError(ex, "Error deleting author {AuthorId}", id);
+                return ErrorResponse.Fail(ex.Message);
             }
         }
 
@@ -111,65 +120,82 @@ namespace WebApiEntityFrameworkCoreDemo.Services
                 : await _db.Books.FindAsync(id, cancellationToken);
         }
 
-        public async Task<Book> AddBookAsync(BookRequest request, CancellationToken cancellationToken = default)
-        {
-            var book = new Book
-            {
-                Id = Guid.NewGuid(),
-                Title = request.Title,
-                Description = request.Description,
-                Price = request.Price
-            };
-
-            if (request.AuthorIds.Any())
-            {
-                var authors = await _db.Authors.Where(a => request.AuthorIds.Contains(a.Id)).ToListAsync(cancellationToken);
-                book.Authors = authors;
-            }
-
-            await _db.Books.AddAsync(book, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
-            return await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == book.Id, cancellationToken);
-        }
-
-        public async Task<Book> UpdateBookAsync(Guid id, BookRequest request, CancellationToken cancellationToken = default)
-        {
-            var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
-            if (book == null) return null;
-
-            book.Title = request.Title;
-            book.Description = request.Description;
-            book.Price = request.Price;
-
-            if (request.AuthorIds != null)
-            {
-                var authors = await _db.Authors.Where(a => request.AuthorIds.Contains(a.Id)).ToListAsync(cancellationToken);
-                book.Authors = authors;
-            }
-
-            await _db.SaveChangesAsync(cancellationToken);
-            return book;
-        }
-
-        public async Task<(bool, string)> DeleteBookAsync(Book book, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponse> AddBookAsync(BookRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                var dbBook = await _db.Books.FindAsync(book.Id);
-
-                if (dbBook == null)
+                var book = new Book
                 {
-                    return (false, "Book could not be found.");
+                    Id = Guid.NewGuid(),
+                    Title = request.Title,
+                    Description = request.Description,
+                    Price = request.Price
+                };
+
+                if (request.AuthorIds.Any())
+                {
+                    var authors = await _db.Authors.Where(a => request.AuthorIds.Contains(a.Id)).ToListAsync(cancellationToken);
+                    book.Authors = authors;
+                }
+
+                await _db.Books.AddAsync(book, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+                return ErrorResponse.Ok(book.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding book {BookTitle}", request.Title);
+                return ErrorResponse.Fail(ex.Message);
+            }
+        }
+
+        public async Task<ErrorResponse> UpdateBookAsync(Guid id, BookRequest request, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var book = await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+                if (book == null) return ErrorResponse.Fail($"Book with id {id} not found");
+
+                book.Title = request.Title;
+                book.Description = request.Description;
+                book.Price = request.Price;
+
+                if (request.AuthorIds != null)
+                {
+                    var authors = await _db.Authors.Where(a => request.AuthorIds.Contains(a.Id)).ToListAsync(cancellationToken);
+                    book.Authors = authors;
+                }
+
+                await _db.SaveChangesAsync(cancellationToken);
+                return ErrorResponse.Ok(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating book {BookId}", id);
+                return ErrorResponse.Fail(ex.Message);
+            }
+        }
+
+        public async Task<ErrorResponse> DeleteBookAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var book = await _db.Books.FindAsync(id);
+
+                if (book == null)
+                {
+                    return ErrorResponse.Fail($"Book with id {id} not found");
                 }
 
                 _db.Books.Remove(book);
                 await _db.SaveChangesAsync(cancellationToken);
 
-                return (true, "Book got deleted.");
+                return ErrorResponse.Ok("Book deleted successfully");
             }
             catch (Exception ex)
             {
-                return (false, $"An error occured. Error Message: {ex.Message}");
+                _logger.LogError(ex, "Error deleting book {BookId}", id);
+                return ErrorResponse.Fail(ex.Message);
             }
         }
 

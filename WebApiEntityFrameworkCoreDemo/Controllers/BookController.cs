@@ -44,24 +44,25 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(BookRequest request, CancellationToken token)
         {
-            var dbBook = await _libraryService.AddBookAsync(request, token);
+            var response = await _libraryService.AddBookAsync(request, token);
 
-            if (dbBook == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{request.Title} could not be added.");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return CreatedAtAction("GetBook", new { id = dbBook.Id }, dbBook);
+            var dbBook = await _libraryService.GetBookAsync(response.Id.Value, token, true);
+            return CreatedAtAction("GetBook", new { id = response.Id }, dbBook);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(Guid id, BookRequest request, CancellationToken token)
         {
-            Book dbBook = await _libraryService.UpdateBookAsync(id, request, token);
+            var response = await _libraryService.UpdateBookAsync(id, request, token);
 
-            if (dbBook == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{request.Title} could not be updated");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
             return NoContent();
@@ -70,15 +71,14 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id, CancellationToken token)
         {
-            var book = await _libraryService.GetBookAsync(id, token);
-            (bool status, string message) = await _libraryService.DeleteBookAsync(book, token);
+            var response = await _libraryService.DeleteBookAsync(id, token);
 
-            if (status == false)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, message);
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return StatusCode(StatusCodes.Status200OK, book);
+            return StatusCode(StatusCodes.Status200OK, response.Message);
         }
     }
 }

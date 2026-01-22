@@ -59,11 +59,11 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAuthor(Guid id, AuthorRequest author, CancellationToken token)
         {
-            Author dbAuthor = await _libraryService.UpdateAuthorAsync(id, author, token);
+            var response = await _libraryService.UpdateAuthorAsync(id, author, token);
 
-            if (dbAuthor == null)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{author.Name} could not be updated");
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
             return NoContent();
@@ -72,15 +72,14 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpDelete("id")]
         public async Task<IActionResult> DeleteAuthor(Guid id, CancellationToken token)
         {
-            var author = await _libraryService.GetAuthorAsync(id, token, false);
-            (bool status, string message) = await _libraryService.DeleteAuthorAsync(author, token);
+            var response = await _libraryService.DeleteAuthorAsync(id, token);
 
-            if (status == false)
+            if (!response.Success)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, message);
+                return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            return StatusCode(StatusCodes.Status200OK, author);
+            return StatusCode(StatusCodes.Status200OK, response.Message);
         }
     }
 }
