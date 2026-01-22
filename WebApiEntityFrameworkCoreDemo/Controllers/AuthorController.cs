@@ -17,9 +17,9 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAuthors(CancellationToken token)
+        public async Task<IActionResult> GetAuthors(CancellationToken token, bool includeBooks = false)
         {
-            var authors = await _libraryService.GetAuthorsAsync(token);
+            var authors = await _libraryService.GetAuthorsAsync(token, includeBooks);
 
             if (authors == null)
             {

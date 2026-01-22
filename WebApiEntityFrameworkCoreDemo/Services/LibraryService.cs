@@ -18,9 +18,11 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
         #region Authors
 
-        public async Task<List<Author>> GetAuthorsAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Author>> GetAuthorsAsync(CancellationToken cancellationToken = default, bool includeBooks = false)
         {
-            return await _db.Authors.ToListAsync(cancellationToken);
+            return includeBooks
+                ? await _db.Authors.Include(a => a.Books).ToListAsync(cancellationToken)
+                : await _db.Authors.ToListAsync(cancellationToken);
         }
 
         public async Task<Author> GetAuthorAsync(Guid id, CancellationToken cancellationToken = default, bool includeBooks = false)
@@ -109,9 +111,11 @@ namespace WebApiEntityFrameworkCoreDemo.Services
 
         #region Books
 
-        public async Task<List<Book>> GetBooksAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Book>> GetBooksAsync(CancellationToken cancellationToken = default, bool includeAuthors = false)
         {
-            return await _db.Books.ToListAsync(cancellationToken);
+            return includeAuthors
+                ? await _db.Books.Include(b => b.Authors).ToListAsync(cancellationToken)
+                : await _db.Books.ToListAsync(cancellationToken);
         }
 
         public async Task<Book> GetBookAsync(Guid id, CancellationToken cancellationToken = default, bool includeAuthors = false)

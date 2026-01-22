@@ -17,9 +17,9 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBooks(CancellationToken token)
+        public async Task<IActionResult> GetBooks(CancellationToken token, bool includeAuthors = false)
         {
-            var books = await _libraryService.GetBooksAsync(token);
+            var books = await _libraryService.GetBooksAsync(token, includeAuthors);
             if (books == null)
             {
                 return StatusCode(StatusCodes.Status204NoContent, "No books in database.");
