@@ -9,17 +9,17 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
     [Route("api/[controller]")]
     public class AuthorController : ControllerBase
     {
-        private readonly ILibraryService _libraryService;
+        private readonly IAuthorService _authorService;
 
-        public AuthorController(ILibraryService libraryService)
+        public AuthorController(IAuthorService authorService)
         {
-            _libraryService = libraryService;
+            _authorService = authorService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAuthors(CancellationToken token, bool includeBooks = false)
         {
-            var authors = await _libraryService.GetAuthorsAsync(token, includeBooks);
+            var authors = await _authorService.GetAuthorsAsync(token, includeBooks);
 
             if (authors == null)
             {
@@ -29,14 +29,14 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
             return StatusCode(StatusCodes.Status200OK, authors);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetAuthor(Guid id, CancellationToken token, bool includeBooks = true)
         {
-            Author author = await _libraryService.GetAuthorAsync(id, token, includeBooks);
+            Author author = await _authorService.GetAuthorAsync(id, token, includeBooks);
 
             if (author == null)
             {
-                return StatusCode(StatusCodes.Status204NoContent, $"No Author found for id: {id}");
+                return  StatusCode(StatusCodes.Status204NoContent, $"No Author found for id: {id}");
             }
 
             return StatusCode(StatusCodes.Status200OK, author);
@@ -45,21 +45,21 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Author>> AddAuthor(AuthorRequest author, CancellationToken token)
         {
-            var response = await _libraryService.AddAuthorAsync(author, token);
+            var response = await _authorService.AddAuthorAsync(author, token);
 
             if (!response.Success)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, response.Message);
             }
 
-            var dbAuthor = await _libraryService.GetAuthorAsync(response.Id.Value, token, true);
+            var dbAuthor = await _authorService.GetAuthorAsync(response.Id.Value, token, true);
             return CreatedAtAction("GetAuthor", new { id = response.Id }, dbAuthor);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAuthor(Guid id, AuthorRequest author, CancellationToken token)
         {
-            var response = await _libraryService.UpdateAuthorAsync(id, author, token);
+            var response = await _authorService.UpdateAuthorAsync(id, author, token);
 
             if (!response.Success)
             {
@@ -69,10 +69,10 @@ namespace WebApiEntityFrameworkCoreDemo.Controllers
             return NoContent();
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(Guid id, CancellationToken token)
         {
-            var response = await _libraryService.DeleteAuthorAsync(id, token);
+            var response = await _authorService.DeleteAuthorAsync(id, token);
 
             if (!response.Success)
             {
